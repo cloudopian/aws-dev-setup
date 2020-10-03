@@ -1,0 +1,262 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "DevMachineInstanceTypeParameter": {
+      "Type": "String",
+      "Default": "t3.large",
+      "AllowedValues": [ "t2.medium", "t2.large", "t2.xlarge", "t3.medium", "t3.large", "t3.xlarge" ],
+      "Description": "Instance type to be used for the development machine"
+    },
+    "MainPassword": {
+      "NoEcho": "true",
+      "Description": "Specify the Windows Administrator password for the DevMachine",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "41",
+      "AllowedPattern": "^(?=.*\\d).{4,41}$"
+    },
+    "DevSetupNetworkStackName": {
+      "Type": "String",
+      "Default": "DevSetup-Network",
+      "Description": "Enter the name of the CloudFormation stack that created the network"
+    },
+    "EC2WindowsAMIID": {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-Base"
+    }
+  },
+  "Resources": {
+    "DevMachine": {
+      "Type": "AWS::EC2::Instance",
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "configSets": {
+            "config": [
+              "prereq",
+              "programs",
+              "post_reboot",
+              "signal_complete"
+            ]
+          },
+          "prereq": {
+            "files": {
+              "c:\\cfn\\cfn-hup.conf": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "[main]\n",
+                      "stack=",
+                      { "Ref": "AWS::StackName" },
+                      "\n",
+                      "region=",
+                      { "Ref": "AWS::Region" },
+                      "\n"
+                    ]
+                  ]
+                }
+              },
+              "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "[cfn-auto-reloader-hook]\n",
+                      "triggers=post.update\n",
+                      "path=Resources.DevMachine.Metadata.AWS::CloudFormation::Init\n",
+                      "action=cfn-init.exe -v -c config -s ",
+                      { "Ref": "AWS::StackName" },
+                      " -r DevMachine",
+                      " --region ",
+                      { "Ref": "AWS::Region" },
+                      "\n"
+                    ]
+                  ]
+                }
+              },
+              "C:\\Installers\\AWSCLIV2.msi": {
+                "source": "https://awscli.amazonaws.com/AWSCLIV2.msi"
+              },
+              "C:\\sri\\mytext.txt": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "Hello World\n",
+                      "Sristack=",
+                      { "Ref": "AWS::StackName" },
+                      "\n",
+                      "SriRegion=",
+                      { "Ref": "AWS::Region" },
+                      "\n"
+                    ]
+                  ]
+                }
+              }
+            },
+            "commands": {
+              "01-installChocolatey": {
+                "command": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "powershell.exe -Command ",
+                      "\"Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')); \""
+                    ]
+                  ]
+                },
+                "waitAfterCompletion": "0"
+              },
+              "02-disableChocoPrompts": {
+                "command": "C:\\ProgramData\\chocolatey\\choco.exe feature enable -n allowGlobalConfirmation",
+                "waitAfterCompletion": "0"
+              }
+            },
+            "services": {
+              "windows": {
+                "cfn-hup": {
+                  "enabled": "true",
+                  "ensureRunning": "true",
+                  "files": [ "c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" ]
+                }
+              }
+            }
+          },
+          "programs": {
+            "commands": {
+              "01-install-chrome": {
+                "command": "C:\\ProgramData\\chocolatey\\choco.exe install googlechrome --ignorechecksum",
+                "waitAfterCompletion": "0"
+              },
+              "02-install-7zip": {
+                "command": "C:\\ProgramData\\chocolatey\\choco.exe install  7zip.install",
+                "waitAfterCompletion": "0"
+              },
+              "03-install-notepadplusplus": {
+                "command": "C:\\ProgramData\\chocolatey\\choco.exe install notepadplusplus",
+                "waitAfterCompletion": "0"
+              },
+              "04-aws-cli-v2": {
+                "command": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "powershell.exe -Command msiexec.exe /I \"c:\\Installers\\AWSCLIV2.msi\" /quiet"
+                    ]
+                  ]
+                },
+                "waitAfterCompletion": "0"
+              },
+              "05-install-vscode": {
+                "command": "C:\\ProgramData\\chocolatey\\choco.exe install vscode",
+                "waitAfterCompletion": "0"
+              },
+              "06-install-vscode-extensions-csharp": {
+                "command": "C:\\ProgramData\\chocolatey\\choco.exe install vscode",
+                "waitAfterCompletion": "0"
+              },
+              "07-install-vscode-extensions-csharp": {
+                "command": "code --install-extension ms-dotnettools.csharp",
+                "waitAfterCompletion": "0"
+              },
+              "08-install-vscode-extensions-awstoolkit": {
+                "command": "code --install-extension ms-dotnettools.csharp",
+                "waitAfterCompletion": "0"
+              },
+              "09-install-dotnetcore-sdk": {
+                "command": "C:\\ProgramData\\chocolatey\\choco.exe install dotnetcore-sdk",
+                "waitAfterCompletion": "0"
+              }
+            }
+          },
+          "post_reboot": {
+            "commands": {
+              "01-restart": {
+                "command": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "powershell.exe -Command \"Rename-Computer -NewName 'DevMachine' -Restart -Force\""
+                    ]
+                  ]
+                },
+                "waitAfterCompletion": "forever"
+              }
+            }
+          },
+          "signal_complete": {
+            "commands": {
+              "1-signal-resource": {
+                "command": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "cfn-signal.exe -e %ERRORLEVEL% --resource DevMachine --stack ",
+                      {
+                        "Ref": "AWS::StackName"
+                      },
+                      "         --region ",
+                      {
+                        "Ref": "AWS::Region"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "Properties": {
+        "ImageId": { "Ref": "EC2WindowsAMIID" },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevMachine-Windows"
+          }
+        ],
+        "InstanceType": { "Ref": "DevMachineInstanceTypeParameter" },
+        "SubnetId": { "Fn::ImportValue": { "Fn::Sub": "${DevSetupNetworkStackName}-MyDev-Public-Subnet-1" } },
+        "IamInstanceProfile": { "Fn::ImportValue": { "Fn::Sub": "${DevSetupNetworkStackName}-MyDev-DevMachine-IntanceProfile" } },
+        "SecurityGroupIds": [ { "Fn::ImportValue": { "Fn::Sub": "${DevSetupNetworkStackName}-MyDev-DevMachine-SecurityGroup" } } ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "([adsi]\"WinNT://$env:computername/Administrator\").SetPassword('",
+                {
+                  "Ref": "MainPassword"
+                },
+                "') \n",
+                "Install-PackageProvider -Name NuGet -Force\n",
+                "Install-module -Force AWSPowerShell\n",
+                "Import-Module AWSPowerShell\n",
+                "$folderpath=\"C:\\Installers\\\"\n",
+                "If(!(test-path $folderpath))\n",
+                "{\n",
+                "New-Item -ItemType Directory -Force -Path $folderpath\n",
+                "}\n",
+                "cfn-init.exe -v -c config -s ",
+                {
+                  "Ref": "AWS::StackId"
+                },
+                " -r DevMachine",
+                " --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "\n",
+                "</powershell>\n"
+              ]
+            ]
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+  }
+
+}
