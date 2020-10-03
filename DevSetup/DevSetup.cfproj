@@ -20,16 +20,9 @@
     <Compile Include="CloudFormation\DevSetup-WindowsDevMachine.template">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Test\format.json">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Test\test2.template">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CloudFormation" />
-    <Folder Include="Test" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
   </PropertyGroup>
