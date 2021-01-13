@@ -4,7 +4,7 @@
     "DevMachineInstanceTypeParameter": {
       "Type": "String",
       "Default": "t3.large",
-      "AllowedValues": [ "t2.medium", "t2.large", "t2.xlarge", "t3.medium", "t3.large", "t3.xlarge" ],
+      "AllowedValues": [ "t2.medium", "t2.large", "t2.xlarge", "t3.medium", "t3.large", "t3.xlarge","m5.large","c5.large" ],
       "Description": "Instance type to be used for the development machine"
     },
     "MainPassword": {
