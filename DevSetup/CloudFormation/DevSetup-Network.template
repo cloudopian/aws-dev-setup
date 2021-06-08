@@ -193,7 +193,7 @@
             }
           ]
         },
-        "RoleName": "MyDev-DevMachine-Role",
+        "RoleName": {"Fn::Join": ["-", ["MyDev-DevMachine-Role",{"Ref": "AWS::Region"}]]},
         "ManagedPolicyArns": [
           "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
           "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
@@ -205,7 +205,7 @@
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Roles": [ { "Ref": "DevMachineRole" } ],
-        "InstanceProfileName": "MyDev-DevMachine-Role"
+        "InstanceProfileName": {"Fn::Join": ["-", ["MyDev-DevMachine-Role",{"Ref": "AWS::Region"}]]}
       }
     },
     "DevMachineSecurityGroup": {

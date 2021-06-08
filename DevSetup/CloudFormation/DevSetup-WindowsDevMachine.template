@@ -217,7 +217,7 @@
         ],
         "InstanceType": { "Ref": "DevMachineInstanceTypeParameter" },
         "SubnetId": { "Fn::ImportValue": { "Fn::Sub": "${DevSetupNetworkStackName}-MyDev-Public-Subnet-1" } },
-        "IamInstanceProfile": { "Fn::ImportValue": { "Fn::Sub": "${DevSetupNetworkStackName}-MyDev-DevMachine-IntanceProfile" } },
+        "IamInstanceProfile": { "Fn::ImportValue": { "Fn::Sub": "${DevSetupNetworkStackName}-MyDev-DevMachine-IntanceProfile-${AWS::Region}" } },
         "SecurityGroupIds": [ { "Fn::ImportValue": { "Fn::Sub": "${DevSetupNetworkStackName}-MyDev-DevMachine-SecurityGroup" } } ],
         "UserData": {
           "Fn::Base64": {
