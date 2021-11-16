@@ -22,7 +22,7 @@
     },
     "EC2WindowsAMIID": {
       "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-      "Default": "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-Base"
+      "Default": "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-ContainersLatest"
     }
   },
   "Resources": {
