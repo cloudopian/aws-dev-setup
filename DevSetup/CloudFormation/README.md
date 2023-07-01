@@ -21,6 +21,7 @@ Use this when you just want a simple network setup and you have no plan to exper
 Once the instance starts, you can remote login with the username and password.
 When the instance starts it will install set of useful software [Chocolatey,Google chrome,7Zip,Notepad++,VSCode,AWS CLI]. You can easily customize what get installed by changing the section *Resources>DevMachine>Metadata* in **DevSetup-WindowsDevMachine.template**
 
+[Here is a demo](http://www.youtube.com/watch?v=bHaQ7X45jdA) on how to use these templates.
  
 
 ### How create an advanced development environment
