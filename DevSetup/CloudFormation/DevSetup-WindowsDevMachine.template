@@ -82,7 +82,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "Read the documentation at https://github.com/cloudopian/aws-dev-setup \n",
+                      "Read the documentation at https://github.com/cloudopian/aws-dev-setup/tree/master/DevSetup/CloudFormation \n",
                       "Sristack=",
                       { "Ref": "AWS::StackName" },
                       "\n",

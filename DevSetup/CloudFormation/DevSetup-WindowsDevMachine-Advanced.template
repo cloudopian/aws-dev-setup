@@ -77,12 +77,12 @@
               "C:\\Installers\\AWSCLIV2.msi": {
                 "source": "https://awscli.amazonaws.com/AWSCLIV2.msi"
               },
-              "C:\\sri\\mytext.txt": {
+              "C:\\Cloudopian\\Readme.txt": {
                 "content": {
                   "Fn::Join": [
                     "",
                     [
-                      "Hello World\n",
+                      "Read the documentation at https://github.com/cloudopian/aws-dev-setup/tree/master/DevSetup/CloudFormation \n",
                       "Sristack=",
                       { "Ref": "AWS::StackName" },
                       "\n",
